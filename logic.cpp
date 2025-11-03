@@ -1,23 +1,16 @@
-#include "logic.h"
 #include <algorithm>
-#include <cctype>
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include "logic.h"
 using namespace std;
-
 Piece::Piece(char t, Color c) : type(t), color(c) {}
-
 bool Piece::isEmpty() const { return type == '.'; }
-
 char Piece::displayChar() const {
     if (isEmpty()) return '.';
     return (color == WHITE) ? type : (char)tolower(type);
 }
-
 /* ---------------- Board implementation ---------------- */
-
 Board::Board()
     : board(BOARD_SIZE, vector<Piece>(BOARD_SIZE)),
     turn(Color::WHITE),
@@ -28,7 +21,6 @@ Board::Board()
 {
     initBoard();
 }
-
 void Board::initBoard() {
     string pieces = "RNBQKBNR";
     for (int i = 0; i < BOARD_SIZE; ++i) {
@@ -49,7 +41,6 @@ void Board::initBoard() {
     positionHistory.push_back(positionKey());
     turn = Color::WHITE;
 }
-
 void Board::display() const {
     cout << "\n";
     for (int r = BOARD_SIZE - 1; r >= 0; --r) {
@@ -60,20 +51,16 @@ void Board::display() const {
     }
     cout << "  a b c d e f g h\n";
 }
-
 bool Board::inBounds(int x, int y) const {
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
 }
-
 bool Board::isSquareAttacked(const pii& sq, Color byColor) const {
     static const vector<pii> bishopDirs = { {1, 1}, {1, -1}, {-1, 1}, {-1, -1} };
     static const vector<pii> rookDirs = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
-
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             const Piece& p = board[i][j];
             if (p.isEmpty() || p.color != byColor) continue;
-
             if (p.type == 'P') {
                 int dir = (byColor == WHITE) ? -1 : 1;
                 int ax = i + dir;
@@ -122,7 +109,6 @@ bool Board::isSquareAttacked(const pii& sq, Color byColor) const {
     }
     return false;
 }
-
 void Board::addSlidingMoves(int x, int y, const vector<pii>& dirs, vector<pii>& out) const {
     const Piece& p = board[x][y];
     for (auto d : dirs) {
@@ -139,7 +125,6 @@ void Board::addSlidingMoves(int x, int y, const vector<pii>& dirs, vector<pii>& 
         }
     }
 }
-
 vector<pii> Board::getMoves(const pii& pos) const {
     vector<pii> moves;
     int x = pos.first, y = pos.second;
@@ -195,7 +180,6 @@ vector<pii> Board::getMoves(const pii& pos) const {
     }
     return moves;
 }
-
 vector<pii> Board::legalMoves(const pii& pos) {
     vector<pii> out;
     int x = pos.first, y = pos.second;
@@ -203,7 +187,6 @@ vector<pii> Board::legalMoves(const pii& pos) {
     const Piece& p = board[x][y];
     if (p.isEmpty()) return out;
     if (p.color != turn) return out;
-
     vector<pii> cand = getMoves(pos);
     for (auto to : cand) {
         Piece moving = board[x][y];
@@ -236,7 +219,6 @@ vector<pii> Board::legalMoves(const pii& pos) {
     }
     return out;
 }
-
 pii Board::findKing(Color c) const {
     for (int i = 0; i < BOARD_SIZE; ++i)
         for (int j = 0; j < BOARD_SIZE; ++j)
@@ -244,14 +226,12 @@ pii Board::findKing(Color c) const {
                 return { i,j };
     return { -1,-1 };
 }
-
 bool Board::isInCheck(Color c) {
     pii kingPos = findKing(c);
     if (kingPos.first == -1) return false;
     Color enemy = (c == Color::WHITE) ? Color::BLACK : Color::WHITE;
     return isSquareAttacked(kingPos, enemy);
 }
-
 bool Board::isCheckmate(Color c) {
     if (!isInCheck(c)) return false;
     for (int i = 0; i < BOARD_SIZE; ++i)
@@ -262,7 +242,6 @@ bool Board::isCheckmate(Color c) {
             }
     return true;
 }
-
 bool Board::isStalemate(Color c) {
     if (isInCheck(c)) return false;
     for (int i = 0; i < BOARD_SIZE; ++i)
@@ -273,7 +252,6 @@ bool Board::isStalemate(Color c) {
             }
     return true;
 }
-
 string Board::positionKey() const {
     string key;
     for (int i = BOARD_SIZE - 1; i >= 0; --i)
@@ -282,16 +260,13 @@ string Board::positionKey() const {
     key.push_back((turn == WHITE) ? 'w' : 'b');
     return key;
 }
-
 bool Board::isThreefoldRepetition() const {
     string key = positionKey();
     int count = 0;
     for (auto& k : positionHistory) if (k == key) ++count;
     return count >= 3;
 }
-
 bool Board::isFiftyMoveRule() const { return halfmoveClock >= 100; }
-
 bool Board::makeMove(pii from, pii to) {
     if (!inBounds(from.first, from.second) || !inBounds(to.first, to.second)) return false;
     Piece p = board[from.first][from.second];
