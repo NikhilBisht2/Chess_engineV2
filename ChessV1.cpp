@@ -1,18 +1,13 @@
-﻿#include "logic.h"
-#include "ChessV1.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <algorithm>
-#include <cctype>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
+#include "logic.h"
 using namespace std;
-
 const int BASE_WINDOW_SIZE = 800;
-
 struct TextureManager {
     unordered_map<string, SDL_Texture*> textures;
     bool load(SDL_Renderer* renderer, const string& name, const string& path) {
@@ -33,23 +28,34 @@ struct TextureManager {
         textures.clear();
     }
 };
-
 string pieceKeyFor(const Piece& p) {
     if (p.isEmpty())
         return "";
     string key = (p.color == WHITE) ? "white-" : "black-";
     switch (toupper(p.type)) {
-    case 'P': key += "pawn"; break;
-    case 'R': key += "rook"; break;
-    case 'N': key += "knight"; break;
-    case 'B': key += "bishop"; break;
-    case 'Q': key += "queen"; break;
-    case 'K': key += "king"; break;
-    default: return "";
+    case 'P':
+        key += "pawn";
+        break;
+    case 'R':
+        key += "rook";
+        break;
+    case 'N':
+        key += "knight";
+        break;
+    case 'B':
+        key += "bishop";
+        break;
+    case 'Q':
+        key += "queen";
+        break;
+    case 'K':
+        key += "king";
+        break;
+    default:
+        return "";
     }
     return key;
 }
-
 int main() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         cerr << "SDL init failed: " << SDL_GetError() << endl;
@@ -62,7 +68,6 @@ int main() {
         SDL_Quit();
         return 1;
     }
-
     SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
     if (!renderer) {
         cerr << "Renderer creation failed: " << SDL_GetError() << endl;
@@ -71,12 +76,10 @@ int main() {
         return 1;
     }
     TextureManager tm;
-    vector<string> pieceNames = {
-        "white-pawn", "white-rook", "white-knight",
-        "white-bishop", "white-queen", "white-king",
-        "black-pawn", "black-rook", "black-knight",
-        "black-bishop", "black-queen", "black-king"
-    };
+    vector<string> pieceNames = { "white-pawn",   "white-rook",  "white-knight",
+                                 "white-bishop", "white-queen", "white-king",
+                                 "black-pawn",   "black-rook",  "black-knight",
+                                 "black-bishop", "black-queen", "black-king" };
     for (auto& name : pieceNames) {
         if (!tm.load(renderer, name, "assets/" + name + ".png")) {
             cerr << "Warning: failed to load texture '" << name << "'; continuing.\n";
