@@ -1,13 +1,9 @@
 #pragma once
 #include <string>
-#include <utility>
 #include <vector>
-
 using namespace std;
 using pii = pair<int, int>;
-
 enum Color { NONE, WHITE, BLACK };
-
 struct Piece {
     char type;
     Color color;
@@ -15,7 +11,6 @@ struct Piece {
     bool isEmpty() const;
     char displayChar() const;
 };
-
 class Board {
 public:
     static const int BOARD_SIZE = 8;
@@ -30,7 +25,6 @@ public:
     pii lastDoublePawnMove;
     int halfmoveClock;
     vector<string> positionHistory;
-
     Board();
     void initBoard();
     void display() const;
